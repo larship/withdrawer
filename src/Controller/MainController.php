@@ -48,7 +48,7 @@ class MainController extends AbstractController
     public function index(UserService $userService): Response
     {
         if ($userService->isAuthenticated()) {
-            return new RedirectResponse('/withdraw');
+            return new RedirectResponse($this->generateUrl('withdraw_page'));
         }
 
         $authError = $this->session->get('authenticationError');
@@ -75,7 +75,7 @@ class MainController extends AbstractController
             return new RedirectResponse($this->generateUrl('main'));
         }
 
-        return new RedirectResponse('/withdraw');
+        return new RedirectResponse($this->generateUrl('withdraw_page'));
     }
 
     /**
@@ -88,13 +88,13 @@ class MainController extends AbstractController
     public function showWithdrawPage(UserService $userService): Response
     {
         if (empty($user = $userService->getAuthenticatedUser())) {
-            return new RedirectResponse('/');
+            return new RedirectResponse($this->generateUrl('main'));
         }
 
         $balance = $this->userBalanceRepository->findByUserId($user->getId());
 
         if (empty($balance)) {
-            return new RedirectResponse('/');
+            return new RedirectResponse($this->generateUrl('main'));
         }
 
         $withdrawStatus     = $this->session->get('withdrawStatus');
@@ -127,7 +127,7 @@ class MainController extends AbstractController
     public function withdrawAction(Request $request, UserService $userService, WithdrawService $withdrawService): Response
     {
         if (empty($user = $userService->getAuthenticatedUser())) {
-            return new RedirectResponse('/');
+            return new RedirectResponse($this->generateUrl('main'));
         }
 
         try {
@@ -135,16 +135,16 @@ class MainController extends AbstractController
         } catch (NotEnoughMoneyException $exception) {
             $this->session->set('withdrawStatus', false);
             $this->session->set('withdrawStatusText', 'Невозможно выполнить списание: недостаточно средств!');
-            return new RedirectResponse('/withdraw');
+            return new RedirectResponse($this->generateUrl('withdraw_page'));
         } catch (Throwable $throwable) {
             $this->session->set('withdrawStatus', false);
             $this->session->set('withdrawStatusText', 'Невозможно выполнить списание!');
-            return new RedirectResponse('/withdraw');
+            return new RedirectResponse($this->generateUrl('withdraw_page'));
         }
 
         $this->session->set('withdrawStatus', true);
         $this->session->set('withdrawStatusText', 'Списание средств выполнено успешно!');
-        return new RedirectResponse('/withdraw');
+        return new RedirectResponse($this->generateUrl('withdraw_page'));
     }
 
     /**
@@ -157,6 +157,6 @@ class MainController extends AbstractController
     public function logoutAction(Request $request): Response
     {
         $this->session->invalidate();
-        return new RedirectResponse('/');
+        return new RedirectResponse($this->generateUrl('main'));
     }
 }
