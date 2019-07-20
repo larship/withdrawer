@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome to Withdrawer!{% endblock %}</title>
+        {% block stylesheets %}
+            <style>
+                body {
+                    margin: 0px;
+                    padding: 0px;
+                    width: 100vw;
+                    height: 100vh;
+                }
+            </style>
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

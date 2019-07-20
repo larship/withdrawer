@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <style>
+        .form-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .login-form{
+            padding: 10px;
+            background-color: #f3f3f3;
+            border: 1px solid #999999;
+            width: 250px;
+        }
+
+        .login-form > div:not(:first-child) {
+            padding-top: 15px;
+        }
+
+        .login-form button, .login-form input {
+            width: 100%;
+        }
+
+        .login-form--error {
+            color: #aa0000;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="form-wrapper">
+        <form action="{{ path('login_action') }}" method="post" class="login-form">
+            <div>
+                <label for="username">Логин:</label><br>
+                <input id="username" name="username" required type="text">
+            </div>
+            <div>
+                <label for="password">Пароль:</label><br>
+                <input id="password" name="password" required type="password">
+            </div>
+            <div>
+                <button type="submit">Войти</button>
+            </div>
+            {% if authError is not empty %}
+                <div class="login-form--error">
+                    {{ authError }}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

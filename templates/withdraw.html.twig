@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <style>
+        .page-wrapper {
+            display: flex;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            background-color: #eeeeee;
+            border-right: 1px solid #999999;
+            width: 200px;
+            height: 100vh;
+        }
+
+        .menu a {
+            padding: 10px 15px;
+            display: inline-block;
+            text-decoration: none;
+            color: #333333;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .menu a:hover:not(.active) {
+            background-color: #aa0000;
+            color: #ffffff;
+        }
+
+        .menu a.active {
+            background-color: #aa0000;
+            color: #ffffff;
+        }
+
+        .content {
+            padding: 15px 0px 0px 15px;
+        }
+
+        .user-balance {
+            padding-bottom: 15px;
+        }
+
+        .withdraw-form input {
+            width: 100px;
+        }
+
+        .withdraw-status {
+            padding-top: 15px;
+        }
+
+        .withdraw-status--success {
+            color: #00aa00;
+        }
+
+        .withdraw-status--error {
+            color: #aa0000;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-wrapper">
+        <div class="menu">
+            <a href="{{ path('withdraw_page') }}" class="active">
+                Списание средств
+            </a>
+            <a href="{{ path('logout') }}">
+                Выход
+            </a>
+        </div>
+        <div class="content">
+            <div class="user-welcome">
+                Добрый день, {{ username }}!
+            </div>
+            <div class="user-balance">
+                Доступно для списания: {{ balance }} ед.
+            </div>
+            <div>
+                <form action="{{ path('withdraw_action') }}" method="post" class="withdraw-form">
+                    <label for="withdraw-sum">Укажите сумму для списания:</label>
+                    <input id="withdraw-sum" name="sum" type="number" required min="1" max="{{ balance }}">
+                    <button type="submit">Списать</button>
+                </form>
+            </div>
+            {% if withdrawStatusText is defined %}
+                <div class="withdraw-status {{ withdrawStatus == true ? 'withdraw-status--success' : 'withdraw-status--error'}}">
+                    {{ withdrawStatusText }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
