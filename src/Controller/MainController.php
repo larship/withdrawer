@@ -131,7 +131,7 @@ class MainController extends AbstractController
         }
 
         try {
-            $withdrawService->withdraw($user->getId(), $request->get('sum'));
+            $withdrawService->withdraw($user->getId(), (float) $request->get('sum'));
         } catch (NotEnoughMoneyException $exception) {
             $this->session->set('withdrawStatus', false);
             $this->session->set('withdrawStatusText', 'Невозможно выполнить списание: недостаточно средств!');

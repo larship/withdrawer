@@ -55,7 +55,7 @@ class UserRepository extends ServiceEntityRepository
         }
 
         $user = new User();
-        $user->setId($userData['id']);
+        $user->setId((int) $userData['id']);
         $user->setUsername($userData['username']);
         $user->setPassword($userData['password']);
         return $user;

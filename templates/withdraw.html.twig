@@ -82,7 +82,7 @@
                 <form action="{{ path('withdraw_action') }}" method="post" class="withdraw-form">
                     <label for="withdraw-sum">Укажите сумму для списания:</label>
                     <input id="withdraw-sum" name="sum" type="number" required min="1" max="{{ balance }}">
-                    <button type="submit">Списать</button>
+                    <button type="submit">Вывести</button>
                 </form>
             </div>
             {% if withdrawStatusText is defined %}
