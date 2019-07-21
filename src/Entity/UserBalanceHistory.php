@@ -47,7 +47,7 @@ class UserBalanceHistory
 
     public function getId(): int
     {
-        return $this->getId();
+        return $this->id;
     }
 
     public function getUserId(): int

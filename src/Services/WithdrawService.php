@@ -51,6 +51,10 @@ class WithdrawService
      */
     public function canWithdraw(int $userId, float $sum): bool
     {
+        if ($sum <= 0) {
+            return false;
+        }
+
         $balance = $this->userBalanceRepository->findByUserId($userId);
 
         if (empty($balance)) {

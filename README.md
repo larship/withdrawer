@@ -22,3 +22,14 @@
 
 После настройки приложения будет доступна аутентификация пользователя с именем `Tester` и паролем `123`.
 Баланс данного пользователя будет составлять `100 единиц`
+
+## Тесты
+
+Следующий набор команд создаст тестовую базу данных, наполнит её и запустит тесты:
+```
+./bin/console do:database:drop --env test --if-exists --force && \
+./bin/console do:database:create --env test && \
+./bin/console do:mi:mi --env test --no-interaction && \
+./bin/console do:fi:load --env test --no-interaction && \
+phpunit
+```
