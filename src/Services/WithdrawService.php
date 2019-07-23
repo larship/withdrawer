@@ -75,12 +75,16 @@ class WithdrawService
      */
     public function withdraw(int $userId, float $sum): void
     {
+        $this->connection->query('SET autocommit=0')->execute();
+        $this->connection->query('LOCK TABLES user_balance WRITE, user_balance_history WRITE')->execute();
+
         if (!$this->canWithdraw($userId, $sum)) {
             $this->logUserWithdraw($userId, $sum, static::STATUS_FAIL);
+            $this->connection->query('COMMIT')->execute();
+            $this->connection->query('UNLOCK TABLES')->execute();
+            $this->connection->query('SET autocommit=1')->execute();
             throw new NotEnoughMoneyException();
         }
-
-        $this->connection->query('START TRANSACTION')->execute();
 
         try {
             // Тут просто списываем, без зачисления куда-то в другое место
@@ -91,12 +95,16 @@ class WithdrawService
                 SET
                   balance = balance - :sum
                 WHERE
-                  user_id = :userId 
+                  user_id = :userId
             ')->execute(['userId' => $userId, 'sum' => $sum]);
             $this->logUserWithdraw($userId, $sum, static::STATUS_SUCCESS);
             $this->connection->query('COMMIT')->execute();
+            $this->connection->query('UNLOCK TABLES')->execute();
+            $this->connection->query('SET autocommit=1')->execute();
         } catch (Throwable $throwable) {
             $this->connection->query('ROLLBACK')->execute();
+            $this->connection->query('UNLOCK TABLES')->execute();
+            $this->connection->query('SET autocommit=1')->execute();
             $this->logUserWithdraw($userId, $sum, static::STATUS_FAIL);
 
             throw $throwable;
