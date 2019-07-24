@@ -32,16 +32,15 @@ class UserBalanceRepository extends ServiceEntityRepository
     /**
      * Получить баланс пользователя
      *
-     * @param int $userId Идентификатор пользолвателя
+     * @param int  $userId     Идентификатор пользователя
+     * @param bool $useRowLock Значение, показывающее, требуется ли установить блокировку на выбранную строку с балансом
      *
      * @return UserBalance|null
      */
-    public function findByUserId(int $userId): ?UserBalance
+    public function findByUserId(int $userId, bool $useRowLock = false): ?UserBalance
     {
         // Требование использовать Raw SQL при работе с ORM
-        $rawSql = '
-            SELECT * FROM user_balance WHERE user_id = :userId
-        ';
+        $rawSql = 'SELECT * FROM user_balance WHERE user_id = :userId' . ($useRowLock ? ' FOR UPDATE' : '');
 
         try {
             $statement = $this->connection->prepare($rawSql);

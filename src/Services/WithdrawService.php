@@ -55,7 +55,7 @@ class WithdrawService
             return false;
         }
 
-        $balance = $this->userBalanceRepository->findByUserId($userId);
+        $balance = $this->userBalanceRepository->findByUserId($userId, true);
 
         if (empty($balance)) {
             return false;
@@ -75,14 +75,11 @@ class WithdrawService
      */
     public function withdraw(int $userId, float $sum): void
     {
-        $this->connection->query('SET autocommit=0')->execute();
-        $this->connection->query('LOCK TABLES user_balance WRITE, user_balance_history WRITE')->execute();
+        $this->connection->query('START TRANSACTION')->execute();
 
         if (!$this->canWithdraw($userId, $sum)) {
             $this->logUserWithdraw($userId, $sum, static::STATUS_FAIL);
             $this->connection->query('COMMIT')->execute();
-            $this->connection->query('UNLOCK TABLES')->execute();
-            $this->connection->query('SET autocommit=1')->execute();
             throw new NotEnoughMoneyException();
         }
 
@@ -99,12 +96,8 @@ class WithdrawService
             ')->execute(['userId' => $userId, 'sum' => $sum]);
             $this->logUserWithdraw($userId, $sum, static::STATUS_SUCCESS);
             $this->connection->query('COMMIT')->execute();
-            $this->connection->query('UNLOCK TABLES')->execute();
-            $this->connection->query('SET autocommit=1')->execute();
         } catch (Throwable $throwable) {
             $this->connection->query('ROLLBACK')->execute();
-            $this->connection->query('UNLOCK TABLES')->execute();
-            $this->connection->query('SET autocommit=1')->execute();
             $this->logUserWithdraw($userId, $sum, static::STATUS_FAIL);
 
             throw $throwable;
